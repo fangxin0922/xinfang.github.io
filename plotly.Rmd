@@ -9,7 +9,7 @@ output:
 
 #load and clean data
 
-We're going to look at instacart data.
+We're going to look at NYC restaurant inspection data. Since this data set is big, we are only going to look at my favorite restaurant types (i.e. Chinese, Korean, Thai, French, Mexican, and Japanese) in Manhattan. 
 
 ```{r message = FALSE, warning = FALSE}
 library(tidyverse)
@@ -34,33 +34,55 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
-data("instacart")
+data("rest_inspec")
 
-instacart <- instacart %>% 
-    mutate(
-      order_dow = order_dow + 1,
-      order_dow = wday(order_dow, label = T)
-   )  %>% 
-    select(order_id, aisle, department, order_dow) %>%
-   filter(department == "frozen") %>%
-  group_by(order_dow, aisle, department) %>% 
-  summarise(quantity_of_order = n())
+rest_inspec <- rest_inspec %>% 
+  select(boro, cuisine_description,  dba, score, grade, critical_flag) %>% 
+  filter(grade %in% c("A", "B", "C"), 
+         cuisine_description == c("Korean", "Chinese", "Japanese", "Thai", "French", "Mexican"), 
+         boro == "MANHATTAN", 
+         critical_flag != "Not Applicable") %>% 
+  drop_na(score)
 ```
+This rest_inspec dataset now contains `r nrow(rest_inspec)` observations. It is seems reasonable to make plots now. 
 
 # plotly plots 
 
-## scatterplot 
+## Bar plot
 ```{r}
-instacart %>% 
-  mutate(text_label = str_c("Day:", order_dow, "\nQuantity:", quantity_of_order)) %>% 
-  plot_ly(
-    x = ~order_dow, y = ~quantity_of_order, color = ~aisle, text = ~text_label,
-          type = "scatter", mode = "markers") 
+rest_inspec %>% 
+  count(cuisine_description) %>% 
+  mutate(cuisine_description = fct_reorder(cuisine_description, n), 
+         text_label = str_c("Cuisine: ", cuisine_description, "\nN = ", n)) %>% 
+  plot_ly(x = ~cuisine_description, y = ~n, color = ~cuisine_description,text = ~text_label,
+          type = "bar", mode = "markers") %>% 
+  layout(
+    title = "Count of restaurants in Manhattan by cuisine", 
+    xaxis = list(title = "Cuisine"),
+    yaxis = list(title = "Count"))
 ```
 
 ## boxplot 
 ```{r}
-
+rest_inspec %>% 
+  mutate(text_label = str_c("Cuisine: ", cuisine_description, "\nScore: ", score)) %>%
+  plot_ly(y = ~score, x = ~cuisine_description, 
+          color = ~cuisine_description, 
+          text = ~text_label,
+          type = "box") %>% 
+  layout(
+    title = "Scores of restaurants in Manhattan grouped by my favorite cuisine types", 
+    xaxis = list(title = "Cuisine types"),
+    yaxis = list(title = "Inspection score"))
 ```
 
 
+## Histogram
+```{r}
+rest_inspec %>% 
+  mutate(text_label = str_c("Restaurant: ", dba, "\nScore: ", score)) %>%
+  plot_ly(x = ~score, type = "histogram", alpha = .8, text = ~text_label,mode = "markers") %>% 
+  layout(title = "Histogram of inspection scores of NY restaurants",
+         xaxis = list(title = "Score"),
+         yaxis = list(title = "Count"))
+```
