@@ -19,7 +19,7 @@ Let's link to useful tools for data science:
 
 ## Local image
 
-Here is Harley. He might be my cat in the next couple of weeks. 
+Here is Harley. He might be my cat in the next couple of weeks. He is a great cat!
 
 ![](image/harley_firstlook.PNG)
 
