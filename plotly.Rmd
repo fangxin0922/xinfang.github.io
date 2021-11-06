@@ -1,0 +1,40 @@
+---
+title: "Plotly examples"
+author: "Xin Fang"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+#load and clean data
+
+We're going to look at instacart data.
+
+```{r message = FALSE, warning = FALSE}
+library(tidyverse)
+library(p8105.datasets)
+library(lubridate)
+library(plotly)
+```
+
+```{r}
+data("instacart")
+
+instacart <- instacart %>% 
+    mutate(
+      order_dow = order_dow + 1,
+      order_dow = wday(order_dow, label = T)
+   )  %>% 
+    select(order_id, aisle, product_name, order_dow) %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits"), 
+         order_dow %in% c("Mon", "Tue", "Wed", "Thu", "Fri"), 
+         ) %>% 
+  group_by(aisle) %>% 
+  count(product_name) %>% 
+  mutate(rank = min_rank(desc(n))) %>% 
+  filter(rank < 21) #top 20 popular items
+```
+
+# plotly plots 
+

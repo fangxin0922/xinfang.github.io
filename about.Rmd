@@ -8,4 +8,12 @@ output:
 
 # This page has information about me
 
+My name is Xin and here is a photo of me. 
+
+<img src="image/resume_pic.jpeg" style="width:75%">
+
+
+#This is my CV if you were interested
+
+<a href="https://fangxin0922.github.io/xinfang.github.io/files/FANG_XIN_CV_DRAFT.pdf " target="_blank">PDF.</a>
 
