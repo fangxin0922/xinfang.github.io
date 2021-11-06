@@ -16,6 +16,21 @@ library(tidyverse)
 library(p8105.datasets)
 library(lubridate)
 library(plotly)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 3
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d 
+
+knitr::opts_chunk$set(
+  fig.height = 6,
+  fig.width = 8,
+  message = F,
+  warning = F 
+  )
 ```
 
 ```{r}
@@ -26,15 +41,26 @@ instacart <- instacart %>%
       order_dow = order_dow + 1,
       order_dow = wday(order_dow, label = T)
    )  %>% 
-    select(order_id, aisle, product_name, order_dow) %>% 
-  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits"), 
-         order_dow %in% c("Mon", "Tue", "Wed", "Thu", "Fri"), 
-         ) %>% 
-  group_by(aisle) %>% 
-  count(product_name) %>% 
-  mutate(rank = min_rank(desc(n))) %>% 
-  filter(rank < 21) #top 20 popular items
+    select(order_id, aisle, department, order_dow) %>%
+   filter(department == "frozen") %>%
+  group_by(order_dow, aisle, department) %>% 
+  summarise(quantity_of_order = n())
 ```
 
 # plotly plots 
+
+## scatterplot 
+```{r}
+instacart %>% 
+  mutate(text_label = str_c("Day:", order_dow, "\nQuantity:", quantity_of_order)) %>% 
+  plot_ly(
+    x = ~order_dow, y = ~quantity_of_order, color = ~aisle, text = ~text_label,
+          type = "scatter", mode = "markers") 
+```
+
+## boxplot 
+```{r}
+
+```
+
 
