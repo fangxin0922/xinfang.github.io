@@ -63,7 +63,7 @@ rest_inspec %>%
     yaxis = list(title = "Count"))
 ```
 
-### Histogram of inspection scores of NY restaurants
+### Histogram of inspection scores of Manhattan restaurants
 
 ```{r}
 rest_inspec %>%
