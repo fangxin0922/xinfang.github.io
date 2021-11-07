@@ -1,0 +1,76 @@
+
+---
+title: "Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source: embed
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(p8105.datasets)
+library(plotly)
+library(flexdashboard)
+```
+
+```{r}
+data("rest_inspec")
+
+rest_inspec <- rest_inspec %>% 
+  select(boro, cuisine_description, dba, score, grade, critical_flag,grade_date) %>% 
+  filter(
+    grade %in% c("A", "B", "C"), 
+    cuisine_description == c("Korean", "Chinese", "Japanese", "Thai", "French", "Mexican"), 
+    boro == "MANHATTAN", 
+    critical_flag != "Not Applicable") %>% 
+  drop_na(score)
+```
+
+   
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Scores of restaurants in Manhattan grouped by cuisine types
+
+```{r}
+rest_inspec %>% 
+  mutate(text_label = str_c("Cuisine: ", cuisine_description, "\nScore: ", score)) %>%
+  plot_ly(y = ~score, x = ~cuisine_description, 
+          color = ~cuisine_description, 
+          text = ~text_label,
+          type = "box") %>% 
+  layout(
+    xaxis = list(title = "Cuisine types"),
+    yaxis = list(title = "Inspection score"))
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Count of restaurants in Manhattan by cuisine
+
+```{r}
+rest_inspec %>% 
+  count(cuisine_description) %>% 
+  mutate(cuisine_description = fct_reorder(cuisine_description, n), 
+         text_label = str_c("Cuisine: ", cuisine_description, "\nN = ", n)) %>% 
+  plot_ly(x = ~cuisine_description, y = ~n, color = ~cuisine_description,text = ~text_label,
+          type = "bar") %>% 
+  layout(
+    xaxis = list(title = "Cuisine"),
+    yaxis = list(title = "Count"))
+```
+
+### Histogram of inspection scores of NY restaurants
+
+```{r}
+rest_inspec %>%
+  mutate(text_label = str_c( "critical status:", critical_flag, "\nScore: ", score)) %>%
+  plot_ly(x = ~score, type = "histogram", color = ~critical_flag, alpha = .8, hovertext = ~text_label) %>% 
+  layout(
+         xaxis = list(title = "Inspection score"),
+         yaxis = list(title = "Count"))
+```
+

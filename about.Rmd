@@ -13,7 +13,7 @@ My name is Xin and here is a photo of me.
 <img src="image/resume_pic.jpeg" style="width:75%">
 
 
-#This is my CV if you were interested
+## This is my CV if you were interested
 
-<a href="https://fangxin0922.github.io/xinfang.github.io/files/FANG_XIN_CV_DRAFT.pdf " target="_blank">PDF.</a>
+<a href="https://github.com/fangxin0922/xinfang.github.io/raw/main/files/FANG_XIN_CV_DRAFT.pdf" target="_blank">CV</a>
 

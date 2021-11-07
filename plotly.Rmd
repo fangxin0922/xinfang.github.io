@@ -37,11 +37,12 @@ knitr::opts_chunk$set(
 data("rest_inspec")
 
 rest_inspec <- rest_inspec %>% 
-  select(boro, cuisine_description,  dba, score, grade, critical_flag) %>% 
-  filter(grade %in% c("A", "B", "C"), 
-         cuisine_description == c("Korean", "Chinese", "Japanese", "Thai", "French", "Mexican"), 
-         boro == "MANHATTAN", 
-         critical_flag != "Not Applicable") %>% 
+  select(boro, cuisine_description, dba, score, grade, critical_flag,grade_date) %>% 
+  filter(
+    grade %in% c("A", "B", "C"), 
+    cuisine_description == c("Korean", "Chinese", "Japanese", "Thai", "French", "Mexican"), 
+    boro == "MANHATTAN", 
+    critical_flag != "Not Applicable") %>% 
   drop_na(score)
 ```
 This rest_inspec dataset now contains `r nrow(rest_inspec)` observations. It is seems reasonable to make plots now. 
@@ -55,7 +56,7 @@ rest_inspec %>%
   mutate(cuisine_description = fct_reorder(cuisine_description, n), 
          text_label = str_c("Cuisine: ", cuisine_description, "\nN = ", n)) %>% 
   plot_ly(x = ~cuisine_description, y = ~n, color = ~cuisine_description,text = ~text_label,
-          type = "bar", mode = "markers") %>% 
+          type = "bar") %>% 
   layout(
     title = "Count of restaurants in Manhattan by cuisine", 
     xaxis = list(title = "Cuisine"),
@@ -79,9 +80,9 @@ rest_inspec %>%
 
 ## Histogram
 ```{r}
-rest_inspec %>% 
-  mutate(text_label = str_c("Restaurant: ", dba, "\nScore: ", score)) %>%
-  plot_ly(x = ~score, type = "histogram", alpha = .8, text = ~text_label,mode = "markers") %>% 
+rest_inspec %>%
+  mutate(text_label = str_c( "critical status:", critical_flag, "\nScore: ", score)) %>%
+  plot_ly(x = ~score, type = "histogram", color = ~critical_flag, alpha = .8, hovertext = ~text_label) %>% 
   layout(title = "Histogram of inspection scores of NY restaurants",
          xaxis = list(title = "Score"),
          yaxis = list(title = "Count"))
